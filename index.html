@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Livret formateur Parcours IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,500;112,700;125,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : livret de chantier — bandeau signalétique, sommaire collant, chaque journée lue comme un rail horaire */
+:root{
+  --bg:#EDEFEC; --surface:#F8F9F7; --ink:#17201E; --muted:#56615D; --line:#CDD3CF;
+  --accent:#F2C200; --on-accent:#17201E; --teal:#1E5B55; --teal-soft:#D9E7E4;
+  --ok:#2E7D4F; --warn:#B86F00; --stop:#C2362B;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111715; --surface:#18201D; --ink:#E4EAE6; --muted:#9AA7A2; --line:#2C3733;
+  --accent:#F2C200; --on-accent:#111715; --teal:#6FC0B4; --teal-soft:#1B312E;
+  --ok:#5BBF86; --warn:#E9A23B; --stop:#EC6F63; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#111715; --surface:#18201D; --ink:#E4EAE6; --muted:#9AA7A2; --line:#2C3733;
+  --accent:#F2C200; --on-accent:#111715; --teal:#6FC0B4; --teal-soft:#1B312E;
+  --ok:#5BBF86; --warn:#E9A23B; --stop:#EC6F63; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:1.02rem;line-height:1.6;margin:0}
+.hazard{height:10px;background:repeating-linear-gradient(-45deg,var(--accent) 0 14px,var(--ink) 14px 28px)}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:clamp(16px,4vw,40px)}
+h1,h2,h3,h4{font-family:var(--f-display);font-stretch:112%;text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* En-tête */
+header.hero{padding-block:clamp(28px,6vw,64px) 28px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,4vw,48px);align-items:center}
+.hero h1{font-size:clamp(2.3rem,6.2vw,4.4rem);font-weight:800;font-stretch:125%;letter-spacing:-.01em;margin-block:.35rem .9rem}
+.hero h1 .mark{background:var(--accent);color:var(--on-accent);padding:0 .15em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lede{font-size:1.14rem;max-width:36rem;color:var(--ink)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.2rem}
+.tag{font-family:var(--f-mono);font-size:.8rem;border:1px solid var(--line);background:var(--surface);padding:.3rem .6rem;border-radius:99px;white-space:nowrap}
+.loop{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 16px 12px;min-width:0}
+.loop svg{width:100%;height:auto;display:block}
+.loop figcaption{font-size:.9rem;color:var(--muted);margin-top:.4rem}
+.n-box{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}
+.n-box.hot{fill:var(--accent);stroke:var(--ink)}
+.n-num{font-family:var(--f-mono);font-size:12px;fill:var(--muted)}
+.n-num.hot{fill:var(--on-accent)}
+.n-lbl{font-family:var(--f-display);font-weight:700;font-size:17px;fill:var(--ink)}
+.n-lbl.hot{fill:var(--on-accent)}
+.n-sub{font-family:var(--f-body);font-size:12.5px;fill:var(--muted)}
+.arrow{stroke:var(--ink);stroke-width:1.6;fill:none}
+.arrow-back{stroke:var(--teal);stroke-width:1.6;fill:none;stroke-dasharray:5 4}
+.ah{fill:var(--ink)} .ah-t{fill:var(--teal)}
+.back-lbl{font-family:var(--f-mono);font-size:11.5px;fill:var(--teal)}
+
+/* Sommaire */
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-block:1px solid var(--line)}
+nav.toc ul{list-style:none;display:flex;gap:4px;margin:0 auto;padding-block:8px;overflow-x:auto;scrollbar-width:thin}
+nav.toc a{display:block;white-space:nowrap;text-decoration:none;color:var(--ink);font-family:var(--f-display);font-weight:500;font-size:.92rem;padding:.35rem .6rem;border-radius:99px}
+nav.toc a:hover{background:var(--surface)}
+nav.toc a.m{font-weight:700}
+nav.toc a.m span{font-family:var(--f-mono);font-weight:600;color:var(--muted);margin-right:.3rem;font-size:.8rem}
+
+section{padding-block:clamp(40px,7vw,72px);border-bottom:1px solid var(--line);scroll-margin-top:56px}
+.sec-head{display:grid;gap:.5rem;margin-bottom:1.8rem;max-width:44rem}
+.sec-head h2{font-size:clamp(1.7rem,3.6vw,2.4rem);font-weight:700}
+.sec-head p{color:var(--muted);font-size:1.06rem}
+
+/* Vue d'ensemble */
+.modules3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:.6rem;align-content:start;text-decoration:none;color:inherit}
+.mcard:hover{border-color:var(--ink)}
+.mcard .num{font-family:var(--f-display);font-stretch:125%;font-weight:800;font-size:2.4rem;line-height:1;color:var(--teal)}
+.mcard h3{font-size:1.15rem}
+.mcard .take{font-size:.95rem;color:var(--muted)}
+.mcard .take b{color:var(--ink);font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,48px);margin-top:2.4rem}
+.cols > div{min-width:0}
+.cols h3{font-size:1.1rem;margin-bottom:.7rem}
+ul.clean,ol.clean{margin:0;padding-left:1.2rem;display:grid;gap:.45rem}
+ol.clean li::marker{font-family:var(--f-mono);color:var(--muted)}
+.note{background:var(--teal-soft);border-radius:var(--r);padding:14px 16px;font-size:.96rem;margin-top:1.4rem}
+.note strong{font-family:var(--f-display)}
+
+/* Modules */
+.mod-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,3vw,32px);align-items:start;margin-bottom:2rem}
+.mod-num{font-family:var(--f-display);font-stretch:125%;font-weight:800;font-size:clamp(3.4rem,9vw,6rem);line-height:.85;color:var(--ink);background:var(--accent);color:var(--on-accent);padding:.12em .18em .06em;border-radius:var(--r)}
+.mod-top h2{font-size:clamp(1.6rem,3.6vw,2.4rem);margin-block:.3rem .6rem}
+.mod-top .pitch{font-size:1.08rem;max-width:42rem}
+.goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px;margin-bottom:1.4rem}
+.goal{border-left:3px solid var(--teal);padding:.2rem 0 .2rem .8rem;font-size:.95rem}
+.prep{margin-bottom:2rem}
+.half{margin-top:2.2rem}
+.half-h{display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:.4rem;margin-bottom:.4rem}
+.half-h h3{font-size:1.3rem}
+.half-h .eyebrow{color:var(--muted)}
+.slot{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:clamp(12px,3vw,28px);padding-block:1.3rem;border-bottom:1px solid var(--line)}
+.slot .time{font-family:var(--f-mono);font-size:.9rem;font-weight:600;font-variant-numeric:tabular-nums;padding-top:.2rem}
+.slot .time small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.slot h4{font-size:1.14rem;margin-bottom:.45rem}
+.slot .body{display:grid;gap:.8rem;min-width:0}
+.slot .content{max-width:46rem}
+.act{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;max-width:46rem}
+.lbl{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:600;display:block;margin-bottom:.3rem}
+.act ol{margin:0;padding-left:1.2rem;display:grid;gap:.35rem}
+.prompt-inline{font-family:var(--f-mono);font-size:.86rem;background:var(--teal-soft);border-radius:4px;padding:.05rem .3rem;line-height:1.7}
+.trace{display:inline-flex;gap:.5rem;align-items:baseline;font-size:.9rem;color:var(--muted)}
+.trace b{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--accent);color:var(--on-accent);padding:.1rem .4rem;border-radius:3px;font-weight:600;white-space:nowrap}
+.pause{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:clamp(12px,3vw,28px);padding-block:.55rem;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:.85rem;color:var(--muted)}
+.tips{margin-top:2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.tip{border:1px dashed var(--muted);border-radius:var(--r);padding:12px 14px;font-size:.95rem}
+.tip .lbl{color:var(--warn)}
+
+/* Cas métiers */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.4rem}
+.filters button{font:inherit;font-family:var(--f-display);font-weight:500;font-size:.92rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:.35rem .85rem;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:.6rem;align-content:start}
+.case .job{font-family:var(--f-mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);font-weight:600}
+.case h4{font-size:1.02rem;font-family:var(--f-body);font-weight:700;line-height:1.35}
+.case .gain{font-size:.93rem}
+.case .trap{font-size:.92rem;border-top:1px solid var(--line);padding-top:.6rem;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.55rem}
+.case .trap i{font-style:normal;width:1.35rem;height:1.35rem;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);font-family:var(--f-display);font-weight:800;clip-path:polygon(50% 0,100% 100%,0 100%);font-size:.72rem;padding-top:.3rem}
+
+/* Évaluation */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:.94rem}
+th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td .code{font-family:var(--f-display);font-stretch:125%;font-weight:800;color:var(--teal);margin-right:.35rem}
+.final{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:1rem}
+.box5{border:2px solid var(--ink);border-radius:var(--r);padding:12px;display:grid;gap:.3rem;align-content:start;background:var(--surface)}
+.box5 .k{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.box5 b{font-family:var(--f-display);font-size:1rem}
+.box5 span{font-size:.9rem}
+.box5.hot{background:var(--accent);color:var(--on-accent)}
+.box5.hot .k{color:var(--on-accent)}
+.scale{display:flex;flex-wrap:wrap;gap:8px;margin-block:.8rem}
+.pill{font-family:var(--f-mono);font-size:.8rem;padding:.25rem .65rem;border-radius:99px;border:1.5px solid currentColor;font-weight:600}
+.pill.ok{color:var(--ok)} .pill.mid{color:var(--warn)} .pill.no{color:var(--stop)}
+.quiz{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:q}
+.quiz li{display:grid;grid-template-columns:2rem minmax(0,1fr) auto;gap:.8rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;counter-increment:q}
+.quiz li::before{content:counter(q);font-family:var(--f-mono);color:var(--muted);font-size:.85rem}
+.quiz button{font:inherit;font-family:var(--f-mono);font-size:.8rem;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:.25rem .6rem;cursor:pointer;min-width:7.2rem}
+.quiz button.v{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.quiz button.f{background:var(--stop);border-color:var(--stop);color:var(--surface)}
+.quiz .why{grid-column:2 / -1;font-size:.88rem;color:var(--muted)}
+.row-btn{display:flex;gap:10px;flex-wrap:wrap;margin-top:.8rem}
+.ghost{font:inherit;font-family:var(--f-display);font-weight:500;font-size:.9rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:.35rem .85rem;cursor:pointer}
+
+/* Boîte à outils */
+.hand{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:end}
+.finger{display:grid;gap:.5rem;align-content:end}
+.finger .bar{background:var(--teal);border-radius:40px 40px 6px 6px;position:relative;display:flex;align-items:flex-start;justify-content:center;padding-top:14px}
+.finger .bar span{font-family:var(--f-display);font-weight:800;font-stretch:125%;color:var(--surface);font-size:1.4rem}
+.finger b{font-family:var(--f-display);font-size:1rem}
+.finger .q{font-size:.85rem;color:var(--muted)}
+.finger .ex{font-size:.88rem;border-top:1px solid var(--line);padding-top:.4rem}
+.hand-prompt{margin-top:1rem;font-family:var(--f-mono);font-size:.88rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.lights{display:grid;gap:10px}
+.light{display:grid;grid-template-columns:3.2rem minmax(0,1fr);gap:14px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.dot{width:2.6rem;height:2.6rem;border-radius:50%;border:4px solid var(--ink)}
+.dot.g{background:var(--ok)} .dot.o{background:var(--warn)} .dot.r{background:var(--stop)}
+.light b{font-family:var(--f-display);font-size:1.05rem;display:block}
+.light p{font-size:.93rem}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,4vw,40px)}
+.grid2 > div{min-width:0}
+.tool-h{font-size:1.25rem;margin-bottom:.9rem}
+.block{margin-top:2.6rem}
+.charte{columns:2;column-gap:28px;padding-left:1.3rem;margin:0}
+.charte li{break-inside:avoid;margin-bottom:.45rem}
+.charte li::marker{font-family:var(--f-mono);color:var(--muted)}
+.prompts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:.5rem;align-content:start}
+.pcard b{font-family:var(--f-display)}
+.pcard code{font-family:var(--f-mono);font-size:.84rem;line-height:1.55;display:block;white-space:pre-wrap}
+.pcard button{justify-self:start;font:inherit;font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:4px;padding:.2rem .55rem;cursor:pointer}
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.checks li{display:grid;grid-template-columns:1.4rem minmax(0,1fr);gap:.6rem;font-size:.96rem}
+.checks li::before{content:"";width:1rem;height:1rem;border:2px solid var(--ink);border-radius:3px;margin-top:.25rem}
+footer{padding-block:32px 48px;font-size:.88rem;color:var(--muted)}
+footer ul{padding-left:1.1rem;margin:.4rem 0 0}
+
+@media (max-width:820px){
+  .hero-grid,.cols,.grid2{grid-template-columns:minmax(0,1fr)}
+  .modules3{grid-template-columns:minmax(0,1fr)}
+  .final{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .charte{columns:1}
+}
+@media (max-width:560px){
+  .slot,.pause{grid-template-columns:minmax(0,1fr);gap:.4rem}
+  .mod-top{grid-template-columns:minmax(0,1fr)}
+  .mod-num{justify-self:start}
+  .hand{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .finger .ex,.finger .q{font-size:.76rem}
+  .final{grid-template-columns:minmax(0,1fr)}
+  .quiz li{grid-template-columns:1.5rem minmax(0,1fr)}
+  .quiz button{grid-column:2}
+}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+</head>
+<body>
+
+<div class="hazard" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Greta Lille Métropole · Livret du formateur · SFER 2027</p>
+      <h1>Parcours IA <span class="mark">21&nbsp;heures</span></h1>
+      <p class="lede">Trois journées pratiques pour que chaque stagiaire sache se servir de l'IA avec discernement : pour lui-même, pour trouver un emploi, puis dans son futur métier. Tout est prêt à animer, de l'horaire d'accueil à la grille d'évaluation.</p>
+      <div class="meta">
+        <span class="tag">3 jours × 7 h</span>
+        <span class="tag">8 à 14 stagiaires</span>
+        <span class="tag">Formations qualifiantes</span>
+        <span class="tag">Attestation de compétences</span>
+      </div>
+    </div>
+    <figure class="loop" style="margin:0">
+      <p class="eyebrow" style="margin-bottom:.6rem">La démarche, à chaque atelier</p>
+      <div style="overflow-x:auto">
+      <svg viewBox="0 0 610 192" role="img" aria-label="Démarche en quatre étapes : identifier, formuler, analyser, affiner, puis retour à formuler">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker>
+          <marker id="art" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah-t"/></marker>
+        </defs>
+        <g><rect class="n-box" x="4" y="40" width="132" height="78" rx="6"/><text class="n-num" x="17" y="62">1</text><text class="n-lbl" x="17" y="87">Identifier</text><text class="n-sub" x="17" y="106">la tâche, le besoin</text></g>
+        <g><rect class="n-box hot" x="160" y="40" width="132" height="78" rx="6"/><text class="n-num hot" x="173" y="62">2</text><text class="n-lbl hot" x="173" y="87">Formuler</text><text class="n-sub" x="173" y="106" style="fill:var(--on-accent)">en 5 doigts</text></g>
+        <g><rect class="n-box" x="316" y="40" width="132" height="78" rx="6"/><text class="n-num" x="329" y="62">3</text><text class="n-lbl" x="329" y="87">Analyser</text><text class="n-sub" x="329" y="106">vrai ? complet ? sûr ?</text></g>
+        <g><rect class="n-box" x="472" y="40" width="132" height="78" rx="6"/><text class="n-num" x="485" y="62">4</text><text class="n-lbl" x="485" y="87">Affiner</text><text class="n-sub" x="485" y="106">relancer, préciser</text></g>
+        <line class="arrow" x1="137" y1="79" x2="158" y2="79" marker-end="url(#ar)"/>
+        <line class="arrow" x1="293" y1="79" x2="314" y2="79" marker-end="url(#ar)"/>
+        <line class="arrow" x1="449" y1="79" x2="470" y2="79" marker-end="url(#ar)"/>
+        <path class="arrow-back" d="M538,119 C538,170 226,170 226,121" marker-end="url(#art)"/>
+        <text class="back-lbl" x="382" y="186" text-anchor="middle">tant que le résultat ne convient pas</text>
+        <text class="n-sub" x="4" y="22">Puis décider : j'utilise, je corrige ou je jette.</text>
+      </svg>
+      </div>
+      <figcaption>Les 4 étapes demandées par la Région, vécues dès le premier prompt et jusqu'à l'évaluation finale.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sommaire">
+  <ul class="wrap">
+    <li><a href="#vue">Vue d'ensemble</a></li>
+    <li><a class="m" href="#m1"><span>M1</span>Déontologie et outils</a></li>
+    <li><a class="m" href="#m2"><span>M2</span>Recherche d'emploi</a></li>
+    <li><a class="m" href="#m3"><span>M3</span>Futur métier</a></li>
+    <li><a href="#cas">Cas métiers</a></li>
+    <li><a href="#eval">Évaluation</a></li>
+    <li><a href="#outils">Boîte à outils</a></li>
+  </ul>
+</nav>
+
+<main>
+<section id="vue">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Vue d'ensemble</p>
+      <h2>Un parcours, trois journées, un seul fil rouge</h2>
+      <p>Zéro cours magistral de plus de 20 minutes. Chaque notion est suivie d'une manipulation, et chaque manipulation laisse une trace dans le carnet de bord du stagiaire.</p>
+    </div>
+    <div class="modules3">
+      <a class="mcard" href="#m1"><span class="num">01</span><h3>Déontologie et découverte des outils IA</h3><p class="take"><b>Il repart avec</b> un compte paramétré, ses 10 règles d'or et la méthode du prompt en 5 doigts.</p></a>
+      <a class="mcard" href="#m2"><span class="num">02</span><h3>L'IA au service de sa recherche d'emploi</h3><p class="take"><b>Il repart avec</b> un bilan de compétences flash, un CV et une lettre retravaillés, un entretien simulé.</p></a>
+      <a class="mcard" href="#m3"><span class="num">03</span><h3>L'IA au service du professionnel que vous serez</h3><p class="take"><b>Il repart avec</b> 3 cas métiers résolus, une activité de DP rédigée par lui, l'attestation.</p></a>
+    </div>
+    <div class="cols">
+      <div>
+        <h3>À l'issue des 21 h, le stagiaire sait…</h3>
+        <ol class="clean">
+          <li>utiliser un outil d'IA générative sans exposer de données personnelles ou confidentielles ;</li>
+          <li>rédiger une demande claire et complète, le « prompt métier » ;</li>
+          <li>vérifier, croiser et critiquer un résultat avant de s'en servir ;</li>
+          <li>mobiliser l'IA pour sa recherche d'emploi, puis dans son métier ;</li>
+          <li>valoriser cette compétence auprès d'un employeur.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Public et matériel</h3>
+        <ul class="clean">
+          <li>Stagiaires SFER des formations qualifiantes (bâtiment, logistique, mécanique, services, tertiaire), niveaux hétérogènes.</li>
+          <li>Prérequis : ouvrir un navigateur et taper un texte court. Rien en IA.</li>
+          <li>Regroupement de plusieurs formations possible, dans un encadrement raisonnable.</li>
+          <li>Un poste par stagiaire (PC, à défaut smartphone), internet, vidéoprojecteur, supports imprimés de la boîte à outils.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note"><strong>Le choix de l'outil revient au Greta.</strong> La Région ne recommande aucun outil et n'endosse pas le choix de l'organisme. Critères : conformité RGPD, données hébergées en Europe, refus possible de l'entraînement sur les conversations, gratuité pour le stagiaire. Les autres outils ne servent qu'en démonstration comparée au module 1.</div>
+  </div>
+</section>
+
+<section id="m1"><div class="wrap" data-module="0"></div></section>
+<section id="m2"><div class="wrap" data-module="1"></div></section>
+<section id="m3"><div class="wrap" data-module="2"></div></section>
+
+<section id="cas">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Module 3 · Banque de cas</p>
+      <h2>Quinze cas métiers, chacun avec son piège</h2>
+      <p>Chaque stagiaire en traite trois pendant les ateliers du matin. Le piège à vérifier est le cœur de l'exercice : c'est lui qui fait passer de « l'IA l'a dit » à « j'ai vérifié ».</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filtrer par filière" id="filters"></div>
+    <div class="cases" id="cases"></div>
+  </div>
+</section>
+
+<section id="eval">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Évaluation et attestation</p>
+      <h2>Cinq compétences, prouvées en situation</h2>
+      <p>Évaluation continue (carnet de bord, mises en situation des modules 1 et 2), puis épreuve finale au module 3. La Région attend une preuve pratique : résoudre une problématique métier avec l'IA.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Compétence attestée</th><th>Critères observables</th><th>Quand</th><th>Référentiel</th></tr></thead>
+        <tbody>
+          <tr><td><span class="code">A1</span>Utiliser l'IA de façon responsable et protéger les données</td><td>Aucune donnée personnelle ou confidentielle dans les prompts ; anonymisation correcte ; paramétrage de confidentialité fait</td><td>M1 (prompt à risque), puis en continu</td><td>IA générative C3, C6</td></tr>
+          <tr><td><span class="code">A2</span>Formuler une demande claire et complète</td><td>Au moins 4 des 5 doigts : rôle, cible, objectif, contexte, format</td><td>M1, M2, M3</td><td>IA générative C2</td></tr>
+          <tr><td><span class="code">A3</span>Analyser le résultat avec discernement</td><td>Au moins une vérification croisée avec une source fiable ; erreurs ou limites repérées et nommées</td><td>M1 (chasse à l'erreur), M3</td><td>IA générative C6, piliers Région</td></tr>
+          <tr><td><span class="code">A4</span>Affiner la demande</td><td>Au moins une relance pertinente ; amélioration visible entre version 1 et version 2</td><td>M1, M2, M3</td><td>IA générative C5</td></tr>
+          <tr><td><span class="code">A5</span>Mobiliser l'IA pour l'emploi et le métier</td><td>Mini-cas emploi réalisé ; cas métier résolu avec une décision argumentée</td><td>M2, M3</td><td>Développer son activité C1, C3 (transposés)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="block">
+      <h3 class="tool-h">L'épreuve finale : une fiche en 5 cases, 45 minutes</h3>
+      <p style="max-width:46rem">Cas métier inédit tiré au sort (variante non travaillée le matin). 40 minutes de production individuelle, puis 5 minutes d'échange avec le formateur, centré sur la case 3 : c'est là qu'on voit si le discernement est acquis.</p>
+      <div class="final">
+        <div class="box5"><span class="k">Case 1</span><b>La tâche</b><span>Ce que je dois faire, en une phrase.</span></div>
+        <div class="box5"><span class="k">Case 2</span><b>Mon prompt 1</b><span>En 5 doigts, sans donnée sensible.</span></div>
+        <div class="box5 hot"><span class="k">Case 3</span><b>Mon analyse</b><span>Ce qui est juste, faux ou douteux, et la source qui le prouve.</span></div>
+        <div class="box5"><span class="k">Case 4</span><b>Mon prompt 2</b><span>La version affinée et ce qu'elle a amélioré.</span></div>
+        <div class="box5"><span class="k">Case 5</span><b>Ma décision</b><span>J'utilise, je corrige ou je jette, et pourquoi.</span></div>
+      </div>
+    </div>
+
+    <div class="block grid2">
+      <div>
+        <h3 class="tool-h">Barème</h3>
+        <div class="scale"><span class="pill ok">Acquis</span><span class="pill mid">En cours d'acquisition</span><span class="pill no">Non acquis</span></div>
+        <p>L'attestation détaille chaque compétence, ce qui permet de la valoriser même en cas d'acquisition partielle. Seuil suggéré pour « parcours validé » : <strong>A1 acquis obligatoirement</strong>, plus 3 des 4 autres.</p>
+      </div>
+      <div>
+        <h3 class="tool-h">Quiz de fin de module 1</h3>
+        <p style="color:var(--muted);font-size:.95rem">Vrai ou faux ? Cliquez pour afficher la réponse, à projeter en fin de journée.</p>
+        <div class="row-btn"><button class="ghost" id="showAll" type="button">Tout afficher</button><button class="ghost" id="hideAll" type="button">Tout masquer</button></div>
+      </div>
+    </div>
+    <ol class="quiz" id="quiz" style="margin-top:1rem"></ol>
+  </div>
+</section>
+
+<section id="outils">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Boîte à outils</p>
+      <h2>Les supports à imprimer, projeter ou distribuer</h2>
+      <p>Tous sont cités dans les déroulés. Ils tiennent chacun sur une page A4.</p>
+    </div>
+
+    <h3 class="tool-h">Le prompt en 5 doigts</h3>
+    <div class="hand" id="hand"></div>
+    <p class="hand-prompt">Tu es chef de chantier expérimenté. Pour un apprenti en première année, explique-moi comment préparer un mortier, pour monter un muret en parpaings dehors en octobre. Réponds en 6 étapes numérotées, phrases courtes, avec les dosages.</p>
+
+    <div class="block grid2">
+      <div>
+        <h3 class="tool-h">Le feu tricolore des données</h3>
+        <div class="lights">
+          <div class="light"><span class="dot g" aria-hidden="true"></span><div><b>Vert : je peux le taper</b><p>Une question générale, un texte que j'ai écrit sans nom, une offre d'emploi publique.</p></div></div>
+          <div class="light"><span class="dot o" aria-hidden="true"></span><div><b>Orange : je l'anonymise d'abord</b><p>Mon CV sans nom, adresse ni téléphone ; un compte rendu sans noms ; une photo de chantier sans visage ni plaque.</p></div></div>
+          <div class="light"><span class="dot r" aria-hidden="true"></span><div><b>Rouge : jamais</b><p>Numéro de sécu, RIB, mot de passe, données de santé, devis ou plans de l'entreprise, fichier clients, photo d'un collègue.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="tool-h">Le feu tricolore du dossier professionnel</h3>
+        <div class="lights">
+          <div class="light"><span class="dot g" aria-hidden="true"></span><div><b>Vert</b><p>Corriger l'orthographe, proposer un plan, me poser des questions pour que je détaille.</p></div></div>
+          <div class="light"><span class="dot o" aria-hidden="true"></span><div><b>Orange</b><p>Reformuler une phrase que j'ai écrite moi-même, puis je relis.</p></div></div>
+          <div class="light"><span class="dot r" aria-hidden="true"></span><div><b>Rouge</b><p>Rédiger une activité à ma place, inventer une situation de stage.</p></div></div>
+        </div>
+        <p style="font-size:.9rem;color:var(--muted);margin-top:.7rem">Position de la Région : l'IA peut aider à la présentation, le contenu du DP reste écrit par le stagiaire.</p>
+      </div>
+    </div>
+
+    <div class="block">
+      <h3 class="tool-h">Trame de la charte « Mes 10 règles d'or »</h3>
+      <ol class="charte">
+        <li>Avant de taper, je vérifie que…</li>
+        <li>Je ne donne jamais à l'IA…</li>
+        <li>Quand l'IA me donne un chiffre, je…</li>
+        <li>Quand l'IA me donne une consigne de sécurité, je…</li>
+        <li>Pour écrire un bon prompt, je pense à…</li>
+        <li>Si la réponse ne me convient pas, je…</li>
+        <li>Je dis que j'ai utilisé l'IA quand…</li>
+        <li>Je n'utilise pas l'IA pour…</li>
+        <li>L'IA m'aide surtout à…</li>
+        <li>La décision finale, c'est…</li>
+      </ol>
+    </div>
+
+    <div class="block">
+      <h3 class="tool-h">Prompts types à distribuer</h3>
+      <div class="prompts" id="prompts"></div>
+    </div>
+
+    <div class="block grid2">
+      <div>
+        <h3 class="tool-h">Points de vigilance</h3>
+        <ul class="clean">
+          <li><strong>Hétérogénéité :</strong> pour chaque exercice, une version guidée (prompt à trous) et une version libre.</li>
+          <li><strong>Illectronisme, français langue étrangère :</strong> saisie vocale et traduction autorisées dès le module 1.</li>
+          <li><strong>Comptes :</strong> certains outils imposent un âge minimum ou un numéro de téléphone. Vérifier en amont, prévoir une solution sans adresse mail.</li>
+          <li><strong>Actualisation :</strong> revoir démonstrations et captures avant chaque session, comme le demande la Région.</li>
+          <li><strong>Posture :</strong> pas besoin d'être expert en IA, il faut être expert en esprit critique. « Je ne sais pas, vérifions ensemble » est une excellente réponse.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="tool-h">Check-list avant la session</h3>
+        <ul class="checks">
+          <li>Outil retenu testé sur les postes de la salle, paramétrage de confidentialité vérifié</li>
+          <li>Captures d'écran de secours pour toutes les démonstrations</li>
+          <li>12 cartes d'usages, 20 étiquettes du feu tricolore, 3 prompts à risque imprimés</li>
+          <li>4 réponses d'IA piégées pour la chasse à l'erreur</li>
+          <li>3 offres d'emploi de secours par filière, 4 annonces dont 2 frauduleuses</li>
+          <li>Banque de cas adaptée aux filières présentes, formateur technique sollicité</li>
+          <li>Carnets de bord, grilles d'évaluation, modèles d'attestation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Sources de conception</strong></p>
+    <ul>
+      <li>Webinaire de la Région Hauts-de-France sur le module IA de 21 h (SFER, 2027) : 3 piliers, démarche en 4 étapes, position sur le dossier professionnel.</li>
+      <li>Référentiel « Utiliser l'IA générative » : compétences C2 à C6 (prompt, confidentialité, accessibilité, optimisation, RGPD et IA Act).</li>
+      <li>Référentiel « Développer son activité avec l'IA » : cartographie des tâches (C1), charte d'utilisation (C4), transposées au niveau des stagiaires.</li>
+    </ul>
+    <p style="margin-top:1rem">Greta Lille Métropole · Version de travail, septembre 2026</p>
+  </div>
+</footer>
+
+<script>
+const MODULES = [
+{
+  num:"M1", title:"Déontologie et découverte des outils IA",
+  pitch:"Journée d'entrée : on démystifie, on pose les règles du jeu, puis on met les mains dans le cambouis. À 17 h, chaque stagiaire a un compte paramétré, connaît les limites de l'outil et sait écrire un prompt structuré.",
+  goals:["Distinguer les grands types d'IA et reconnaître l'IA du quotidien","Expliquer pourquoi une IA se trompe : hallucinations, biais","Appliquer les règles de protection des données : RGPD, secret pro, droit à l'image","Prendre en main et paramétrer un outil d'IA générative","Rédiger un prompt avec la méthode des 5 doigts"],
+  am:[
+    {t:"9 h 00",e:"9 h 30",h:"Accueil et brise-glace",c:"Présentation du parcours, des 3 modules et de l'attestation finale.",a:["« Baromètre IA » : les stagiaires se placent sur une ligne au sol, de « j'adore » à « ça me fait peur », et expliquent leur position.","Le formateur note craintes et attentes au tableau. On y reviendra à la fin du module 3."],tr:"Mes attentes, mes craintes"},
+    {t:"9 h 30",e:"10 h 15",h:"L'IA, c'est quoi ?",c:"Les 4 familles citées par la Région : IA traditionnelle (trier, retrouver), prédictive (anticiper à partir de l'historique), générative (créer un contenu inédit), agentique (enchaîner des tâches seule). Message clé : adapter l'outil au besoin, pas besoin d'un bazooka pour écraser une mouche.",a:["Tri de cartes en binôme : 12 usages du quotidien (GPS, suggestions Netflix, filtre anti-spam, correcteur, ChatGPT, prévision météo, déverrouillage facial, robot aspirateur…) à classer dans les 4 familles.","Correction collective, débat sur les cas limites."],tr:"Ma définition de l'IA en une phrase"},
+    {pause:"10 h 15 – 10 h 30"},
+    {t:"10 h 30",e:"11 h 15",h:"Comment ça marche, sans maths",c:"Une IA générative prédit le mot le plus probable : elle ne « sait » pas, elle calcule. D'où les hallucinations (réponse fausse mais sûre d'elle), les biais (elle reproduit les stéréotypes de ses données) et la date limite de connaissances.",a:["Jeu du mot suivant : le formateur lance « Le maçon monte un… », le groupe complète. L'IA fait pareil, en plus rapide.","Démonstration projetée : on demande la biographie d'une personne inventée ou l'histoire d'un monument local fictif. Elle invente.","Test de biais : « Génère l'image d'un plombier », puis « d'une personne qui s'occupe des enfants ». Analyse collective."],tr:"2 erreurs de l'IA que j'ai vues"},
+    {t:"11 h 15",e:"12 h 30",h:"Déontologie, données et loi",c:"Règle d'or : tout ce qu'on tape peut devenir public. RGPD et données personnelles. IA Act : l'Europe classe les IA par niveau de risque et impose de signaler certains contenus générés. Droit d'auteur et droit à l'image. Secret professionnel de l'entreprise d'accueil (plans, devis, clients). Usage honnête : ne pas présenter comme sien un travail entièrement généré.",a:["Le feu tricolore des données : 20 étiquettes à classer en vert, orange, rouge.","Atelier « prompt à risque » (réf. C3) : en binôme, corriger 3 prompts contenant des données sensibles (nom et adresse d'un client, photo d'un collègue, devis réel). On anonymise et on justifie.","Débat mouvant « Est-ce que j'ai le droit de… ? » sur 5 situations."],tr:"Mes prompts corrigés et la règle retenue"}
+  ],
+  pm:[
+    {t:"13 h 30",e:"14 h 00",h:"Panorama des outils",c:"Assistants conversationnels, générateurs d'images, transcription et dictée, traduction. Critères de choix : où vont mes données, est-ce gratuit, faut-il un compte, qui l'édite.",a:["Démonstration comparée : la même question posée à 3 outils, projetée côte à côte.","Le groupe note les différences."],tr:"Tableau comparatif simplifié"},
+    {t:"14 h 00",e:"14 h 45",h:"Prise en main",c:"Création du compte (adresse mail dédiée conseillée), interface, historique, saisie vocale, envoi d'une photo. Paramétrage de confidentialité : désactiver l'utilisation des conversations pour l'entraînement quand l'outil le permet.",a:["Pas à pas guidé sur l'outil retenu par le Greta. Un binôme à l'aise aide un binôme débutant.","Premier échange libre : « Présente-toi et dis-moi ce que tu sais faire pour un futur [métier]. »"],tr:"Capture de mon paramétrage"},
+    {t:"14 h 45",e:"15 h 30",h:"Le prompt en 5 doigts",c:"Structure issue du référentiel (C2) : Rôle, Cible, Objectif, Contexte, Format. Une main = un prompt complet.",a:["Démonstration avant/après : « Fais-moi un mail » contre un prompt en 5 doigts.","Exercice gradué, 3 demandes du quotidien : écrire au bailleur pour une fuite, organiser un anniversaire avec 50 € de budget, expliquer un mot compliqué à un enfant de 10 ans.","Chacun écrit, teste, compare avec son voisin."],tr:"Mes 3 prompts et le meilleur résultat"},
+    {pause:"15 h 30 – 15 h 45"},
+    {t:"15 h 45",e:"16 h 30",h:"Vérifier et affiner",c:"Les 3 réflexes : est-ce vrai (2 sources fiables : site officiel, service-public.fr, notice fabricant) ? est-ce complet ? est-ce adapté à moi ? Relancer pour affiner (réf. C5). Accessibilité (réf. C4) : dictée vocale, lecture à voix haute, langage simple ou FALC, traduction.",a:["« Chasse à l'erreur » : 4 réponses d'IA préparées, dont 3 contiennent une erreur (une date, un calcul, une démarche administrative périmée). En équipe, trouver et prouver l'erreur.","Chacun reprend un de ses prompts et l'améliore en 2 relances."],tr:"Avant/après de mon prompt affiné"},
+    {t:"16 h 30",e:"17 h 00",h:"Clôture",c:"Synthèse de la journée.",a:["Rédaction de sa charte personnelle « Mes 10 règles d'or » à partir de la trame.","Quiz de 10 questions.","Tour de table : un mot pour qualifier la journée."],tr:"Ma charte et mon score au quiz"}
+  ],
+  tips:[["Si le réseau lâche","Gardez les captures d'écran de toutes les démonstrations en secours."],["Écrit difficile","Autorisez la saisie vocale dès 14 h."],["Ne pas diaboliser","L'objectif est la lucidité, pas la peur. Terminez toujours sur un usage utile."]]
+},
+{
+  num:"M2", title:"L'IA au service de sa recherche d'emploi",
+  pitch:"L'IA devient un coach de recherche d'emploi, jamais un prête-plume : elle questionne, structure et reformule, mais le parcours, les chiffres et la voix restent ceux du stagiaire.",
+  prep:"<strong>À préparer par les stagiaires :</strong> apporter son CV actuel et repérer une offre d'emploi réelle qui les intéresse. Le formateur garde 3 offres de secours par filière.",
+  goals:["Explorer un métier et les entreprises du bassin en vérifiant les informations","Identifier et formuler ses compétences techniques et comportementales","Adapter CV et lettre à une offre, sans inventer ni exposer ses données","S'entraîner à l'entretien avec un recruteur simulé","Repérer les arnaques à l'emploi, elles aussi dopées à l'IA"],
+  am:[
+    {t:"9 h 00",e:"9 h 20",h:"Réactivation",c:"Rappel des 5 doigts et du feu tricolore.",a:["Quiz flash à main levée, vrai ou faux.","Règle du jour : nom, adresse, téléphone et mail ne vont jamais dans l'IA. On les remplace par [NOM], [VILLE]… et on les rajoute à la main à la fin."]},
+    {t:"9 h 20",e:"10 h 15",h:"Connaître son métier et ses entreprises",c:"Missions, conditions, salaires, évolutions du métier visé. Cartographie des employeurs du bassin : Lille, Roubaix, Tourcoing, Wattrelos… L'IA propose des pistes, les sources officielles tranchent.",a:["Prompt guidé : <span class='prompt-inline'>Tu es conseiller emploi. Présente-moi le métier de [métier] : missions, qualités attendues, conditions de travail, évolutions. Format : tableau.</span>","Vérification croisée avec la fiche métier France Travail et le site des entreprises.","« Donne-moi 10 types d'entreprises qui recrutent des [métier] autour de [ville]. » On constate que l'IA peut inventer des noms : chaque piste est vérifiée sur internet ou La Bonne Boîte."],tr:"Fiche métier vérifiée et 5 entreprises réelles"},
+    {pause:"10 h 15 – 10 h 30"},
+    {t:"10 h 30",e:"11 h 30",h:"Identifier ses compétences",c:"Compétences techniques (savoir-faire), comportementales (savoir-être) et transférables, acquises ailleurs : sport, bénévolat, famille, petits boulots.",a:["« L'IA m'interviewe » : <span class='prompt-inline'>Tu es conseiller en bilan de compétences. Pose-moi une question à la fois, 10 en tout, pour identifier mes compétences techniques et comportementales. Attends ma réponse avant la suivante. À la fin, fais un tableau de synthèse.</span>","Réponses possibles à l'oral, en dictée.","Relecture critique en binôme : est-ce que je me reconnais ? qu'est-ce qui est exagéré ?"],tr:"Mon tableau de compétences, validé par moi"},
+    {t:"11 h 30",e:"12 h 30",h:"Le CV",c:"Structure, verbes d'action, mots-clés de l'offre (lus par les logiciels de tri des recruteurs), une page. L'IA ne rajoute ni diplôme ni expérience : on contrôle chaque ligne.",a:["Copier son CV anonymisé dans l'outil.","<span class='prompt-inline'>Voici une offre et mon CV. Repère les mots-clés de l'offre absents de mon CV, puis propose des reformulations de mes expériences avec des verbes d'action. N'invente rien.</span>","Le stagiaire accepte, refuse ou modifie chaque proposition.","Mise en forme dans un traitement de texte ou un modèle gratuit."],tr:"CV v2 et liste des modifications acceptées"}
+  ],
+  pm:[
+    {t:"13 h 30",e:"14 h 30",h:"Lettre, mail et message de candidature",c:"Le recruteur repère vite le texte 100 % IA : formules creuses, « passionné et dynamique », phrases interchangeables. L'IA propose un squelette, le stagiaire y met ses faits, ses mots, sa motivation réelle.",a:["Jeu « Humain ou IA ? » : 4 lettres projetées, le groupe devine et justifie.","Le stagiaire note à la main 3 raisons personnelles de postuler.","<span class='prompt-inline'>À partir de ces 3 raisons et de l'offre, propose une lettre courte (15 lignes), ton simple et direct, sans formules toutes faites.</span>","Réécriture d'au moins 3 phrases par le stagiaire, puis déclinaison en mail de 5 lignes."],tr:"Lettre finale et mail de candidature"},
+    {t:"14 h 30",e:"15 h 30",h:"Préparer l'entretien",c:"Questions classiques et questions pièges, pitch d'une minute, questions à poser au recruteur, méthode STAR pour raconter une expérience.",a:["<span class='prompt-inline'>Tu es recruteur dans une entreprise de [secteur]. Fais-moi passer un entretien pour cette offre. Une question à la fois. Après chaque réponse, donne-moi un point fort et un conseil.</span>","Mode vocal si l'outil le propose : on s'entraîne à l'oral, pas au clavier.","En trio : un candidat, un « recruteur IA » qui lit les questions, un observateur avec grille."],tr:"Mon pitch et mes 3 réponses à retravailler"},
+    {pause:"15 h 30 – 15 h 45"},
+    {t:"15 h 45",e:"16 h 20",h:"Organiser sa recherche, déjouer les pièges",c:"Tableau de suivi des candidatures, planning hebdomadaire, message de relance. Arnaques : fausses offres, demande d'argent, de RIB ou de pièce d'identité avant embauche, textes sans faute grâce à l'IA qui rendent les faux crédibles.",a:["« Crée-moi un tableau de suivi de candidatures avec les colonnes utiles. »","« Vraie ou fausse offre ? » : 4 annonces, dont 2 frauduleuses, analysées en équipe. L'IA liste les signaux d'alerte, on vérifie avec les conseils officiels."],tr:"Mon tableau de suivi"},
+    {t:"16 h 20",e:"17 h 00",h:"Mise en situation évaluée",c:"À partir d'une offre inconnue, produire en 25 minutes une accroche de CV adaptée et 3 questions d'entretien probables avec leurs éléments de réponse.",a:["Travail individuel, le formateur circule avec la grille.","10 minutes de retour collectif."],tr:"Livrable du mini-cas"}
+  ],
+  tips:[["Données personnelles","Le CV contient nom, adresse, téléphone, parfois photo et date de naissance. On anonymise avant tout copier-coller."],["Sincérité","Règle du groupe : « Je dois pouvoir parler 2 minutes de chaque ligne de mon CV. »"],["Valorisation","Ajouter au CV : « Utilisation responsable d'outils d'IA générative (formation 21 h, 2027) »."]]
+},
+{
+  num:"M3", title:"L'IA au service du professionnel que vous serez",
+  pitch:"L'IA ne pose pas un carrelage et ne serre pas un écrou. Elle aide sur tout ce qui entoure le geste : préparer, calculer, expliquer, rédiger, traduire. La journée le démontre métier par métier, puis s'attaque au dossier professionnel et se termine par l'évaluation finale.",
+  goals:["Repérer les tâches de son futur métier où l'IA aide vraiment","Résoudre au moins 3 cas pratiques avec la démarche en 4 étapes","Contrôler un résultat technique (calcul, norme, sécurité) avant de l'appliquer","Structurer et corriger son DP avec l'IA, sans lui en confier le contenu"],
+  am:[
+    {t:"9 h 00",e:"9 h 20",h:"Lancement",c:"Ce que l'IA change déjà dans le bâtiment, la logistique, la maintenance, les services. Ce qu'elle ne remplace pas : le geste, l'œil, la responsabilité.",a:["Tour de table : « Dans mon futur métier, la tâche que j'aime le moins, c'est… » Souvent administrative : c'est là que l'IA aide."]},
+    {t:"9 h 20",e:"10 h 15",h:"Cartographier son métier",c:"Transposition du référentiel « Développer son activité » (C1). Trois colonnes : l'IA fait avec moi (rédiger, calculer, traduire) ; l'IA m'informe mais je vérifie (diagnostic, norme) ; l'IA ne touche pas (geste, sécurité, relation humaine).",a:["Par filière : lister 10 tâches du métier en s'appuyant sur le référentiel du titre professionnel préparé.","Les classer dans les 3 colonnes sur paperboard. L'IA peut compléter la liste, le groupe tranche."],tr:"Tableau « mon métier et l'IA »"},
+    {pause:"10 h 15 – 10 h 30"},
+    {t:"10 h 30",e:"12 h 30",h:"Ateliers métiers",c:"Chaque stagiaire traite 3 cas de la <a href='#cas'>banque de cas</a> en suivant la fiche d'atelier : identifier la tâche, écrire le prompt en 5 doigts, analyser (vrai ? complet ? sûr ?), affiner, décider (j'utilise, je corrige ou je jette).",a:["Îlots par filière. Le formateur circule et pose la question qui fâche : « Comment tu sais que c'est juste ? »","Groupes mixtes : un cas transversal commun (message client, traduction) pour les échanges entre filières."],tr:"3 fiches d'atelier complétées"}
+  ],
+  pm:[
+    {t:"13 h 30",e:"14 h 00",h:"Galerie des cas",c:"Mise en commun des meilleurs cas et des plus belles erreurs de l'IA.",a:["Chaque îlot affiche un cas réussi et un cas où l'IA s'est trompée. Les autres circulent et votent."]},
+    {t:"14 h 00",e:"15 h 15",h:"L'IA et le dossier professionnel",c:"Position de la Région : l'IA aide à la présentation (clarté, structure, orthographe), le contenu reste écrit par le stagiaire. Le jury interroge sur le DP : un texte qu'on n'a pas écrit se voit tout de suite à l'oral.",a:["Feu tricolore du DP (voir boîte à outils).","Le stagiaire dicte ou tape ses notes brutes sur une activité réellement réalisée. <span class='prompt-inline'>Voici mes notes. Ne rédige pas à ma place. Pose-moi 5 questions pour que je détaille ce que j'ai fait, avec quels outils, et quelles difficultés.</span>","Il rédige lui-même, puis demande seulement une correction orthographique avec la liste des corrections."],tr:"Une activité du DP rédigée par moi"},
+    {pause:"15 h 15 – 15 h 30"},
+    {t:"15 h 30",e:"16 h 30",h:"Évaluation finale",c:"Résoudre une problématique de son métier avec l'IA : cas inédit tiré au sort dans la banque, variante non travaillée le matin. Détail dans la partie <a href='#eval'>évaluation</a>.",a:["40 minutes de production individuelle.","5 minutes d'échange avec le formateur par stagiaire, pendant que les autres terminent leur carnet de bord."],tr:"Fiche d'évaluation en 5 cases"},
+    {t:"16 h 30",e:"17 h 00",h:"Bilan et attestations",c:"Retour sur le baromètre du module 1 : qui a bougé sur la ligne ?",a:["Chacun note « Mon IA de poche » : 3 usages qu'il garde pour sa vie pro.","Questionnaire de satisfaction.","Remise de l'attestation de compétences."],tr:"Mes 3 usages"}
+  ],
+  tips:[["Binôme conseillé","Formateur IA et formateur technique de la filière pour valider les pièges métier."],["Sécurité","Aucune consigne de sécurité issue de l'IA n'est appliquée sans vérification sur la notice, la norme ou la FDS."],["Photos de chantier","Sans visage, sans plaque, sans logo client."]]
+}];
+
+const CASES = [
+ {f:"BTP",j:"Plombier chauffagiste",c:"Un client signale un chauffe-eau qui fuit par le groupe de sécurité. Préparer l'intervention et expliquer la cause au client en termes simples.",g:"Hypothèses de panne, liste de matériel, message client clair.",p:"Pression, références et normes à contrôler dans la notice fabricant et les DTU. Jamais de consigne gaz sans vérification."},
+ {f:"BTP",j:"Plombier chauffagiste",c:"Rédiger un devis simplifié pour le remplacement d'un WC suspendu.",g:"Structure du devis, postes à ne pas oublier, mentions.",p:"Les prix proposés par l'IA sont fantaisistes ; mentions légales du devis à vérifier."},
+ {f:"BTP",j:"Maçon",c:"Calculer béton, ciment, sable et gravier pour une dalle de 4 m × 5 m sur 12 cm.",g:"Formule, détail du calcul, liste de courses.",p:"Refaire le calcul à la main : 2,4 m³. L'IA se trompe régulièrement sur les dosages et les unités."},
+ {f:"BTP",j:"Maçon",c:"Préparer le planning d'une semaine de chantier et la liste des EPI par tâche.",g:"Planning lisible, check-list sécurité.",p:"Temps de séchage et règles de sécurité à valider avec le formateur technique."},
+ {f:"BTP",j:"Maçon, taille de pierre",c:"Photo d'une fissure sur un mur ancien : que peut-on en dire ?",g:"Vocabulaire, pistes de causes, questions à se poser.",p:"L'IA ne diagnostique pas une structure : elle oriente vers le professionnel compétent."},
+ {f:"BTP",j:"Électricien",c:"Préparer la liste de matériel pour équiper une cuisine.",g:"Liste structurée par circuit.",p:"Sections de câbles et protections à contrôler selon la NF C 15-100. Risque d'erreur réel."},
+ {f:"Logistique",j:"Logisticien, cariste",c:"Organiser la tournée de 8 livraisons dans la métropole lilloise.",g:"Ordre de passage logique, contraintes horaires.",p:"Vérifier sur un vrai outil de cartographie : l'IA ne connaît pas le trafic."},
+ {f:"Logistique",j:"Logisticien, cariste",c:"Rédiger une consigne FIFO simple et la traduire pour un chauffeur non francophone.",g:"Consigne claire, traduction instantanée.",p:"Faire relire la traduction par un locuteur si possible ; aucune donnée client dans le prompt."},
+ {f:"Logistique",j:"Logisticien, cariste",c:"Écrire un mail au transporteur pour un colis endommagé à la réception.",g:"Mail factuel, réserves à formuler.",p:"Délais légaux des réserves à vérifier sur une source officielle."},
+ {f:"Mécanique",j:"Mécanicien auto",c:"Code défaut P0300 relevé à la valise : hypothèses et ordre des contrôles.",g:"Arbre de diagnostic, explications.",p:"Données constructeur prioritaires : l'IA ne remplace pas la documentation technique du véhicule."},
+ {f:"Mécanique",j:"Mécanicien auto",c:"Expliquer au client, sans jargon, pourquoi il faut changer la courroie de distribution.",g:"Texte clair, comparaison parlante.",p:"Préconisations kilométriques à vérifier dans le carnet constructeur."},
+ {f:"Services",j:"Agent de propreté, hôtellerie",c:"Construire un planning de nettoyage et une fiche produit en langage simple.",g:"Fiche lisible, pictogrammes suggérés.",p:"Mélanges de produits : se référer à la fiche de données de sécurité, jamais à l'IA seule."},
+ {f:"Services",j:"Cuisine, restauration",c:"Adapter une fiche technique pour 40 couverts et lister les allergènes.",g:"Calcul des quantités, tableau des allergènes.",p:"Les 14 allergènes réglementaires à contrôler ligne par ligne."},
+ {f:"Tertiaire",j:"Secrétariat, accueil",c:"Résumer un compte rendu de réunion et rédiger le mail de suivi.",g:"Synthèse, mail structuré.",p:"Anonymiser les noms ; vérifier que rien d'important n'a disparu."},
+ {f:"Tertiaire",j:"Vente, commerce",c:"Répondre à un avis client négatif sur internet.",g:"Réponse apaisée et professionnelle.",p:"Ton à relire ; aucun engagement commercial sans l'accord du responsable."}
+];
+
+const QUIZ = [
+ ["L'IA générative vérifie ses réponses sur internet avant de répondre.",false,"Pas systématiquement, et même quand elle cherche, elle peut mal lire ses sources."],
+ ["Je peux copier le devis de mon entreprise de stage pour qu'elle le corrige.",false,"Donnée confidentielle de l'entreprise : feu rouge."],
+ ["Une IA peut inventer une information avec aplomb.",true,"C'est une hallucination."],
+ ["Plus mon prompt est précis, meilleur est le résultat.",true,"D'où les 5 doigts."],
+ ["Une image générée par IA est forcément libre de droits.",false,"Cela dépend de l'outil, de ses conditions et du contenu reproduit."],
+ ["Je peux demander à l'IA d'expliquer plus simplement.",true,"Langage simple, FALC, exemple concret : il suffit de le demander."],
+ ["L'IA est neutre : elle n'a aucun préjugé.",false,"Elle reproduit les biais de ses données."],
+ ["Le RGPD protège les données personnelles des personnes.",true,"Règlement européen, en vigueur depuis 2018."],
+ ["Si l'IA le dit, c'est que c'est vrai.",false,"On vérifie avec 2 sources fiables."],
+ ["Je peux utiliser la saisie vocale pour écrire un prompt.",true,"Utile à l'oral comme pour les difficultés d'écriture."]
+];
+
+const FINGERS = [
+ ["Pouce","Rôle","Qui doit parler ?","Tu es chef de chantier expérimenté.",46],
+ ["Index","Cible","Pour qui ?","Pour un apprenti en première année.",76],
+ ["Majeur","Objectif","Que veux-je ?","Explique comment préparer un mortier.",92],
+ ["Annulaire","Contexte","Quelle situation ?","Un muret en parpaings, dehors, en octobre.",80],
+ ["Auriculaire","Format","Sous quelle forme ?","6 étapes numérotées, phrases courtes, dosages.",58]
+];
+
+const PROMPTS = [
+ ["Comprendre","Explique-moi [notion] comme à quelqu'un qui débute, en 5 phrases maximum, avec un exemple de chantier."],
+ ["Se faire interviewer","Pose-moi une question à la fois pour m'aider à [objectif]. Attends ma réponse avant de continuer."],
+ ["Vérifier","Quelles parties de ta réponse sont les moins sûres ? Quelles sources officielles me permettraient de vérifier ?"],
+ ["Simplifier","Réécris ce texte en langage simple : phrases courtes, mots courants, une idée par phrase."],
+ ["Corriger sans réécrire","Corrige uniquement l'orthographe et la grammaire. Ne change pas mes mots. Liste les corrections."],
+ ["Traduire pour le terrain","Traduis cette consigne en [langue], avec des phrases très simples, puis retraduis-la en français pour que je vérifie."]
+];
+
+function slot(s){
+  if(s.pause) return `<div class="pause"><span>${s.pause}</span><span>Pause</span></div>`;
+  const steps = s.a.length>1 ? `<ol>${s.a.map(x=>`<li>${x}</li>`).join("")}</ol>` : `<p>${s.a[0]}</p>`;
+  return `<div class="slot"><div class="time">${s.t}<small>→ ${s.e}</small></div><div class="body"><div><h4>${s.h}</h4><p class="content">${s.c}</p></div><div class="act"><span class="lbl">Activité</span>${steps}</div>${s.tr?`<p class="trace"><b>Carnet</b>${s.tr}</p>`:""}</div></div>`;
+}
+document.querySelectorAll("[data-module]").forEach(el=>{
+  const m = MODULES[+el.dataset.module];
+  el.innerHTML = `
+  <div class="mod-top"><span class="mod-num">${m.num}</span><div><p class="eyebrow">Module ${m.num.slice(1)} · 7 heures</p><h2>${m.title}</h2><p class="pitch">${m.pitch}</p></div></div>
+  <p class="eyebrow" style="margin-bottom:.7rem">Objectifs opérationnels</p>
+  <div class="goals">${m.goals.map(g=>`<div class="goal">${g}</div>`).join("")}</div>
+  ${m.prep?`<div class="note prep">${m.prep}</div>`:""}
+  <div class="half"><div class="half-h"><h3>Matin</h3><span class="eyebrow">9 h 00 – 12 h 30</span></div>${m.am.map(slot).join("")}</div>
+  <div class="half"><div class="half-h"><h3>Après-midi</h3><span class="eyebrow">13 h 30 – 17 h 00</span></div>${m.pm.map(slot).join("")}</div>
+  <div class="tips">${m.tips.map(t=>`<div class="tip"><span class="lbl">${t[0]}</span>${t[1]}</div>`).join("")}</div>`;
+});
+
+const FILS = ["Toutes", ...new Set(CASES.map(c=>c.f))];
+let current = "Toutes";
+try{ const s = localStorage.getItem("livretIA.filiere"); if(s && FILS.includes(s)) current = s; }catch(e){}
+function renderCases(){
+  document.getElementById("filters").innerHTML = FILS.map(f=>{
+    const n = f==="Toutes"?CASES.length:CASES.filter(c=>c.f===f).length;
+    return `<button type="button" data-f="${f}" aria-pressed="${f===current}">${f} · ${n}</button>`;}).join("");
+  document.getElementById("cases").innerHTML = CASES.filter(c=>current==="Toutes"||c.f===current).map(c=>`
+    <article class="case"><span class="job">${c.j}</span><h4>${c.c}</h4><p class="gain"><span class="lbl">Ce que l'IA apporte</span>${c.g}</p><p class="trap"><i aria-hidden="true">!</i><span><span class="lbl" style="color:var(--warn)">Piège à vérifier</span>${c.p}</span></p></article>`).join("");
+  typo(document.getElementById("cases"));
+}
+document.getElementById("filters").addEventListener("click",e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  current = b.dataset.f; try{ localStorage.setItem("livretIA.filiere",current);}catch(err){}
+  renderCases();
+});
+
+document.getElementById("quiz").innerHTML = QUIZ.map((q,i)=>`<li><span>${q[0]}</span><button type="button" data-i="${i}" id="q${i}">Réponse ?</button><span class="why" hidden id="w${i}"></span></li>`).join("");
+function reveal(i,on){
+  const b = document.getElementById("q"+i), w = document.getElementById("w"+i), q = QUIZ[i];
+  if(on){ b.textContent = q[1]?"Vrai":"Faux"; b.className = q[1]?"v":"f"; w.textContent = q[2]; w.hidden=false; typo(w); }
+  else { b.textContent="Réponse ?"; b.className=""; w.hidden=true; }
+}
+document.getElementById("quiz").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b) return; const i=+b.dataset.i; reveal(i, b.textContent==="Réponse ?");});
+document.getElementById("showAll").onclick=()=>QUIZ.forEach((_,i)=>reveal(i,true));
+document.getElementById("hideAll").onclick=()=>QUIZ.forEach((_,i)=>reveal(i,false));
+
+document.getElementById("hand").innerHTML = FINGERS.map(f=>`<div class="finger"><div class="bar" style="height:${f[4]*1.6}px"><span>${f[1][0]}</span></div><b>${f[1]}</b><span class="q">${f[0]} · ${f[2]}</span><span class="ex">${f[3]}</span></div>`).join("");
+
+document.getElementById("prompts").innerHTML = PROMPTS.map((p,i)=>`<div class="pcard"><b>${p[0]}</b><code id="p${i}">${p[1]}</code><button type="button" data-p="${i}">Copier</button></div>`).join("");
+document.getElementById("prompts").addEventListener("click",async e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  const code=document.getElementById("p"+b.dataset.p);
+  try{ await navigator.clipboard.writeText(PROMPTS[+b.dataset.p][1]); b.textContent="Copié"; }
+  catch(err){ const r=document.createRange(); r.selectNodeContents(code); const s=getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent="Texte sélectionné"; }
+  setTimeout(()=>b.textContent="Copier",1800);
+});
+
+/* Typographie française : espaces fines insécables avant ; : ? ! » et après « */
+function typo(root){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  let n; while((n=w.nextNode())){
+    if(n.parentElement && n.parentElement.closest("script,style,code")) continue;
+    n.nodeValue=n.nodeValue.replace(/ ([;:?!»])/g," $1").replace(/« /g,"« ").replace(/(\d) h (\d)/g,"$1 h $2").replace(/(\d) (%|€|m³|m\b|cm)/g,"$1 $2");
+  }
+}
+renderCases();
+typo(document.body);
+</script>
+
+</body>
+</html>
